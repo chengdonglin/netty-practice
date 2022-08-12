@@ -12,6 +12,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 /**
  * <p>
@@ -25,6 +27,8 @@ public class ServerApplication {
     public static void main(String[] args) throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
+        // 日志 handler
+        LoggingHandler loggingHandler = new LoggingHandler(LogLevel.INFO);
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
@@ -34,6 +38,8 @@ public class ServerApplication {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            // 添加日志 handler
+                            ch.pipeline().addLast(loggingHandler);
                             // 1. 拆包
                             ch.pipeline().addLast(new OrderFrameDecoder());
                             ch.pipeline().addLast(new OrderFrameEncoder());
