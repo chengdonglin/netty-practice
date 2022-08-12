@@ -10,6 +10,7 @@ import com.unic.core.order.OrderOperation;
 import com.unic.core.util.IdUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -44,17 +45,17 @@ public class ClientV2 {
                 protected void initChannel(NioSocketChannel ch) throws Exception {
                     ChannelPipeline pipeline = ch.pipeline();
 
-                    pipeline.addLast(new OrderFrameDecoder());
-                    pipeline.addLast(new OrderFrameEncoder());
+                    pipeline.addLast("frameDecoder",new OrderFrameDecoder());
+                    pipeline.addLast("frameEncoder",new OrderFrameEncoder());
 
-                    pipeline.addLast(new OrderProtocolEncoder());
-                    pipeline.addLast(new OrderProtocolDecoder());
+                    pipeline.addLast("protocolEncoder",new OrderProtocolEncoder());
+                    pipeline.addLast("protocolDecoder",new OrderProtocolDecoder());
 
-                    pipeline.addLast(new ResponseDispatcherHandler(requestPendingCenter));
+                    pipeline.addLast("resultDispatcher",new ResponseDispatcherHandler(requestPendingCenter));
 
-                    pipeline.addLast(new OperationToRequestMessageEncoder());
+                    pipeline.addLast("requestMessageEncoder",new OperationToRequestMessageEncoder());
 
-                    pipeline.addLast(loggingHandler);
+                    pipeline.addLast("logHandler",loggingHandler);
 
 
                 }
@@ -75,8 +76,16 @@ public class ClientV2 {
             requestPendingCenter.add(streamId,operationResultFuture);
 
             try {
-                channelFuture.channel().writeAndFlush(requestMessage);
-
+                ChannelFuture future = channelFuture.channel().writeAndFlush(requestMessage);
+                // 添加发送结果回调监听
+                future.addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        if (!future.isSuccess()) {
+                            requestPendingCenter.remove(streamId);
+                        }
+                    }
+                });
                 OperationResult operationResult = operationResultFuture.get();
 
                 System.out.println(operationResult.toString());

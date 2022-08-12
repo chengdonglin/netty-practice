@@ -41,14 +41,14 @@ public class ServerApplication {
                             // 添加日志 handler
                             ch.pipeline().addLast(loggingHandler);
                             // 1. 拆包
-                            ch.pipeline().addLast(new OrderFrameDecoder());
-                            ch.pipeline().addLast(new OrderFrameEncoder());
+                            ch.pipeline().addLast("frameDecoder",new OrderFrameDecoder());
+                            ch.pipeline().addLast("frameEncoder",new OrderFrameEncoder());
                             //2. byte 转 Object 解码
-                            ch.pipeline().addLast(new OrderProtocolDecoder());
-                            ch.pipeline().addLast(new OrderProtocolEncoder());
+                            ch.pipeline().addLast("protocolDecoder",new OrderProtocolDecoder());
+                            ch.pipeline().addLast("protocolEncoder",new OrderProtocolEncoder());
 
                             // 3. 业务handler
-                            ch.pipeline().addLast(new OrderServerProcessHandler());
+                            ch.pipeline().addLast(workerGroup,"business",new OrderServerProcessHandler());
 
                         }
                     });
