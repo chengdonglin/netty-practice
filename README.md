@@ -6,6 +6,8 @@
 3. 基于 MessageToMessageDecoder<ByteBuf> 完成二次解码
 4. 基于 MessageToMessageEncoder<ResponseMessage> 完成二次解码
 5. client端基于 Future 进行结果响应式分发
+6. AuthHandler 一次授权
+7. RuleBasedIpFilter 黑白名单过滤
 
 ## 协议数据结构
 
