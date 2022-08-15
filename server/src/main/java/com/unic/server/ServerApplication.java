@@ -5,6 +5,7 @@ import com.unic.server.codec.OrderFrameDecoder;
 import com.unic.server.codec.OrderFrameEncoder;
 import com.unic.server.codec.OrderProtocolDecoder;
 import com.unic.server.codec.OrderProtocolEncoder;
+import com.unic.server.handler.MetricHandler;
 import com.unic.server.handler.OrderServerProcessHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -31,6 +32,7 @@ public class ServerApplication {
         EventLoopGroup workerGroup = new NioEventLoopGroup(0,new DefaultThreadFactory("work-"));
         // 日志 handler
         LoggingHandler loggingHandler = new LoggingHandler(LogLevel.INFO);
+        MetricHandler metricHandler = new MetricHandler();
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
@@ -50,6 +52,9 @@ public class ServerApplication {
                             //2. byte 转 Object 解码
                             ch.pipeline().addLast("protocolDecoder",new OrderProtocolDecoder());
                             ch.pipeline().addLast("protocolEncoder",new OrderProtocolEncoder());
+
+                            // 可视化度量 handler
+                            ch.pipeline().addLast("metricHandler",metricHandler);
 
                             // 3. 业务handler
                             ch.pipeline().addLast(workerGroup,"business",new OrderServerProcessHandler());
