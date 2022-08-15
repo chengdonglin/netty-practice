@@ -1,6 +1,7 @@
 package com.unic.client;
 
 import com.unic.client.codec.*;
+import com.unic.core.auth.AuthOperation;
 import com.unic.core.base.RequestMessage;
 import com.unic.core.order.OrderOperation;
 import com.unic.core.util.IdUtil;
@@ -60,7 +61,9 @@ public class ClientV1 {
             channelFuture.sync();
 
 
-            //channelFuture.channel().writeAndFlush(new RequestMessage(IdUtil.nextId(), authOperation));
+            ChannelFuture future = channelFuture.channel().writeAndFlush(new RequestMessage(IdUtil.nextId(), new AuthOperation("admin", "123456")));
+
+            future.get();
 
             // 以下两种方式都可以发送
             // RequestMessage requestMessage = new RequestMessage(IdUtil.nextId(), new OrderOperation(1001, "tudou"));

@@ -5,6 +5,7 @@ import com.unic.server.codec.OrderFrameDecoder;
 import com.unic.server.codec.OrderFrameEncoder;
 import com.unic.server.codec.OrderProtocolDecoder;
 import com.unic.server.codec.OrderProtocolEncoder;
+import com.unic.server.handler.AuthHandler;
 import com.unic.server.handler.MetricHandler;
 import com.unic.server.handler.OrderServerProcessHandler;
 import com.unic.server.handler.ServerIdleHandler;
@@ -43,6 +44,8 @@ public class ServerApplication {
 
         IpSubnetFilterRule filterRule = new IpSubnetFilterRule("127.1.0.1",16, IpFilterRuleType.REJECT);
         RuleBasedIpFilter ruleBasedIpFilter = new RuleBasedIpFilter(filterRule);
+
+        AuthHandler authHandler = new AuthHandler();
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
@@ -61,6 +64,8 @@ public class ServerApplication {
 
                             ch.pipeline().addLast("idleCheck",new ServerIdleHandler());
 
+
+
                             // 1. 拆包
                             ch.pipeline().addLast("frameDecoder",new OrderFrameDecoder());
                             ch.pipeline().addLast("frameEncoder",new OrderFrameEncoder());
@@ -70,6 +75,8 @@ public class ServerApplication {
 
                             // 可视化度量 handler
                             ch.pipeline().addLast("metricHandler",metricHandler);
+
+                            ch.pipeline().addLast(authHandler); // 必须放在 OrderProtocolDecoder， 不然无法知道消息类型
 
                             // 3. 业务handler
                             ch.pipeline().addLast(executors,"business",new OrderServerProcessHandler());
