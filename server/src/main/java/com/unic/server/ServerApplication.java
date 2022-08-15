@@ -15,6 +15,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.concurrent.DefaultThreadFactory;
 
 /**
  * <p>
@@ -26,8 +27,8 @@ import io.netty.handler.logging.LoggingHandler;
  */
 public class ServerApplication {
     public static void main(String[] args) throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1,new DefaultThreadFactory("boss-"));
+        EventLoopGroup workerGroup = new NioEventLoopGroup(0,new DefaultThreadFactory("work-"));
         // 日志 handler
         LoggingHandler loggingHandler = new LoggingHandler(LogLevel.INFO);
         try {
