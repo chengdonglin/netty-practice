@@ -15,6 +15,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioChannelOption;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.ipfilter.IpFilterRuleType;
+import io.netty.handler.ipfilter.IpSubnetFilterRule;
+import io.netty.handler.ipfilter.RuleBasedIpFilter;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -36,6 +39,10 @@ public class ServerApplication {
         // 日志 handler
         LoggingHandler loggingHandler = new LoggingHandler(LogLevel.INFO);
         MetricHandler metricHandler = new MetricHandler();
+
+
+        IpSubnetFilterRule filterRule = new IpSubnetFilterRule("127.1.0.1",16, IpFilterRuleType.REJECT);
+        RuleBasedIpFilter ruleBasedIpFilter = new RuleBasedIpFilter(filterRule);
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
@@ -49,6 +56,8 @@ public class ServerApplication {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             // 添加日志 handler
                             ch.pipeline().addLast(loggingHandler);
+                            // 黑白名单检测
+                            ch.pipeline().addLast("ipfilter",ruleBasedIpFilter);
 
                             ch.pipeline().addLast("idleCheck",new ServerIdleHandler());
 
