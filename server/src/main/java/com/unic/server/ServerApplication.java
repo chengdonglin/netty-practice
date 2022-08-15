@@ -7,6 +7,7 @@ import com.unic.server.codec.OrderProtocolDecoder;
 import com.unic.server.codec.OrderProtocolEncoder;
 import com.unic.server.handler.MetricHandler;
 import com.unic.server.handler.OrderServerProcessHandler;
+import com.unic.server.handler.ServerIdleHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -48,6 +49,9 @@ public class ServerApplication {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             // 添加日志 handler
                             ch.pipeline().addLast(loggingHandler);
+
+                            ch.pipeline().addLast("idleCheck",new ServerIdleHandler());
+
                             // 1. 拆包
                             ch.pipeline().addLast("frameDecoder",new OrderFrameDecoder());
                             ch.pipeline().addLast("frameEncoder",new OrderFrameEncoder());
