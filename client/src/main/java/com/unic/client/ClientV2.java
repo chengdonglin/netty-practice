@@ -1,9 +1,7 @@
 package com.unic.client;
 
 import com.unic.client.codec.*;
-import com.unic.client.dispatcher.OperationResultFuture;
-import com.unic.client.dispatcher.RequestPendingCenter;
-import com.unic.client.dispatcher.ResponseDispatcherHandler;
+import com.unic.client.dispatcher.*;
 import com.unic.core.base.RequestMessage;
 import com.unic.core.operation.OperationResult;
 import com.unic.core.order.OrderOperation;
@@ -33,6 +31,8 @@ public class ClientV2 {
 
         NioEventLoopGroup group = new NioEventLoopGroup();
 
+        KeepaliveHandler keepaliveHandler = new KeepaliveHandler();
+
         RequestPendingCenter requestPendingCenter = new RequestPendingCenter();
         try {
 
@@ -45,6 +45,8 @@ public class ClientV2 {
                 protected void initChannel(NioSocketChannel ch) throws Exception {
                     ChannelPipeline pipeline = ch.pipeline();
 
+                    pipeline.addLast(new ClientIdleCheckHandler());
+
                     pipeline.addLast("frameDecoder",new OrderFrameDecoder());
                     pipeline.addLast("frameEncoder",new OrderFrameEncoder());
 
@@ -54,6 +56,8 @@ public class ClientV2 {
                     pipeline.addLast("resultDispatcher",new ResponseDispatcherHandler(requestPendingCenter));
 
                     pipeline.addLast("requestMessageEncoder",new OperationToRequestMessageEncoder());
+
+                    pipeline.addLast(keepaliveHandler);
 
                     pipeline.addLast("logHandler",loggingHandler);
 
