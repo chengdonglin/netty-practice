@@ -17,6 +17,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import io.netty.util.concurrent.UnorderedThreadPoolEventExecutor;
 
 /**
  * <p>
@@ -30,6 +31,7 @@ public class ServerApplication {
     public static void main(String[] args) throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1,new DefaultThreadFactory("boss-"));
         EventLoopGroup workerGroup = new NioEventLoopGroup(0,new DefaultThreadFactory("work-"));
+        UnorderedThreadPoolEventExecutor executors = new UnorderedThreadPoolEventExecutor(8, new DefaultThreadFactory("order-"));
         // 日志 handler
         LoggingHandler loggingHandler = new LoggingHandler(LogLevel.INFO);
         MetricHandler metricHandler = new MetricHandler();
@@ -57,7 +59,7 @@ public class ServerApplication {
                             ch.pipeline().addLast("metricHandler",metricHandler);
 
                             // 3. 业务handler
-                            ch.pipeline().addLast(workerGroup,"business",new OrderServerProcessHandler());
+                            ch.pipeline().addLast(executors,"business",new OrderServerProcessHandler());
 
                         }
                     });
