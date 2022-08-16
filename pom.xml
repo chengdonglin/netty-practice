@@ -51,6 +51,11 @@
                 <artifactId>metrics-jmx</artifactId>
                 <version>4.1.1</version>
             </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>5.7.17</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -58,6 +63,10 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
         </dependency>
     </dependencies>
 

@@ -1,8 +1,10 @@
 package com.unic.client;
 
+import cn.hutool.core.io.FileUtil;
 import com.unic.client.codec.*;
 import com.unic.core.auth.AuthOperation;
 import com.unic.core.base.RequestMessage;
+import com.unic.core.file.ImgUploadOperation;
 import com.unic.core.order.OrderOperation;
 import com.unic.core.util.IdUtil;
 import io.netty.bootstrap.Bootstrap;
@@ -14,14 +16,11 @@ import io.netty.channel.socket.nio.NioChannelOption;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 import javax.net.ssl.SSLException;
 import java.util.concurrent.ExecutionException;
 
-public class ClientV1 {
+public class ClientV3 {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException, SSLException {
 
@@ -65,12 +64,12 @@ public class ClientV1 {
 
             future.get();
 
+            byte[] bytes = FileUtil.readBytes("C:\\Users\\DM\\Desktop\\微信截图_20220512131302.png");
 
-            // 以下两种方式都可以发送
-            // RequestMessage requestMessage = new RequestMessage(IdUtil.nextId(), new OrderOperation(1001, "tudou"));
-            OrderOperation operation = new OrderOperation(10020,"milk");
+            ImgUploadOperation imgUploadOperation = new ImgUploadOperation("测试上传.png",bytes);
 
-            channelFuture.channel().writeAndFlush(operation);
+            RequestMessage message = new RequestMessage(IdUtil.nextId(), imgUploadOperation);
+            channelFuture.channel().writeAndFlush(message);
 
             channelFuture.channel().closeFuture().sync();
 

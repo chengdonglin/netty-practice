@@ -4,6 +4,8 @@ package com.unic.core.operation;
 
 import com.unic.core.auth.AuthOperation;
 import com.unic.core.auth.AuthOperationResult;
+import com.unic.core.file.ImgUploadOperation;
+import com.unic.core.file.ImgUploadOperationResult;
 import com.unic.core.keepalive.KeepaliveOperation;
 import com.unic.core.keepalive.KeepaliveOperationResult;
 import com.unic.core.order.OrderOperation;
@@ -19,7 +21,8 @@ public enum OperationType {
 
     AUTH(1, AuthOperation.class, AuthOperationResult.class),
     KEEPALIVE(2, KeepaliveOperation.class, KeepaliveOperationResult.class),
-    ORDER(3, OrderOperation.class, OrderOperationResult.class);
+    ORDER(3, OrderOperation.class, OrderOperationResult.class),
+    IMG(4, ImgUploadOperation.class, ImgUploadOperationResult.class);
 
     private int opCode;
     private Class<? extends Operation> operationClazz;

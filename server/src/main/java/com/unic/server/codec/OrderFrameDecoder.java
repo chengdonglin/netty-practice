@@ -8,6 +8,6 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  */
 public class OrderFrameDecoder extends LengthFieldBasedFrameDecoder {
     public OrderFrameDecoder() {
-        super(10240, 0, 4, 0, 4);
+        super(Integer.MAX_VALUE, 0, 4, 0, 4);
     }
 }
