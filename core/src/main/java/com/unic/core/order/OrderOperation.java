@@ -6,6 +6,28 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ *
+ @Slf4j
+ @Component
+ public class BootNettyChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapter {
+    public static BootNettyChannelInboundHandlerAdapter bootNettyChannelInboundHandlerAdapter;
+    //1.正常注入[记得主类也需要使用@Component注解]
+    @Autowired
+    private DeviceUpService deviceUpService;
+ //2.初始化构造方法一定要有
+    public BootNettyChannelInboundHandlerAdapter() {
+
+    }
+ //3.容器初始化的时候进行执行-这里是重点
+ @PostConstruct
+ public void init() {
+    bootNettyChannelInboundHandlerAdapter = this;
+    bootNettyChannelInboundHandlerAdapter.deviceUpService = this.deviceUpService;
+ }
+
+ */
+
+/**
  * @author linchengdong
  */
 @Data
