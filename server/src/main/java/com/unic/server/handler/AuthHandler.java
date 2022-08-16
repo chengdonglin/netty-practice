@@ -7,6 +7,7 @@ import com.unic.core.operation.Operation;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -28,6 +29,7 @@ public class AuthHandler extends SimpleChannelInboundHandler<RequestMessage> {
                 AuthOperation authOperation = AuthOperation.class.cast(operation);
                 AuthOperationResult authOperationResult = authOperation.execute();
                 if (authOperationResult.isPassAuth()) {
+                    ctx.channel().attr(AttributeKey.valueOf("username")).set("admin");
                     log.info("pass auth");
                 } else {
                     log.error("fail to auth");

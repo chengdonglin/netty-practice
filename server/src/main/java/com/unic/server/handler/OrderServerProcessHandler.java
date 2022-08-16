@@ -6,12 +6,15 @@ import com.unic.core.operation.Operation;
 import com.unic.core.operation.OperationResult;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class OrderServerProcessHandler extends SimpleChannelInboundHandler<RequestMessage> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RequestMessage requestMessage) throws Exception {
+        String username = (String)ctx.channel().attr(AttributeKey.valueOf("username")).get();
+        log.info("获取到用户{}",username);
         Operation operation = requestMessage.getMessageBody();
         OperationResult operationResult = operation.execute();
 
