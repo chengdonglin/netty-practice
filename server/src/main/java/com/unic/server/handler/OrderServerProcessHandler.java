@@ -6,8 +6,9 @@ import com.unic.core.operation.Operation;
 import com.unic.core.operation.OperationResult;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 public class OrderServerProcessHandler extends SimpleChannelInboundHandler<RequestMessage> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RequestMessage requestMessage) throws Exception {
@@ -21,7 +22,7 @@ public class OrderServerProcessHandler extends SimpleChannelInboundHandler<Reque
         if (ctx.channel().isActive() && ctx.channel().isWritable()) {
             ctx.writeAndFlush(responseMessage);
         } else {
-            System.out.println("not writable now, message dropped");
+            log.info("not writable now, message dropped");
         }
     }
 
