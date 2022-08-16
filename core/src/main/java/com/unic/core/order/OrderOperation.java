@@ -23,6 +23,7 @@ public class OrderOperation extends Operation {
     @Override
     public OrderOperationResult execute() {
         log.info("order's executing startup with orderRequest: " + toString());
+        // 假设跟 spring 整合的时候，这里可以采用从 bean 容器获取到对应的 service 实例
         //execute order logic
         log.info("order's executing complete");
         OrderOperationResult orderResponse = new OrderOperationResult(tableId, dish, true);
